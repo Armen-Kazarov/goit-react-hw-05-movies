@@ -22,7 +22,7 @@ const getTrendingMovies = async () => {
 
 const getMovieQuery = async query => {
   try {
-    const { data } = await axios.get(`search/movie/`, {
+    const { data } = await axios.get('search/movie', {
       params: { query: query, page: 1, include_adult: false },
     });
 
