@@ -1,25 +1,50 @@
-import logo from './logo.svg';
 import './App.css';
+import { lazy, Suspense } from 'react';
+import { useState } from 'react';
+import { Route, Switch } from 'react-router-dom';
+import Navigation from './components/Navigation/Navigation';
+import SearchMoviesForm from './components/SearchMoviesForm/SearchMoviesForm';
+import NotFoundView from './views/NotFoundView';
+import Spinner from './components/Loader/Loader';
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
-function App() {
+const HomePage = lazy(() =>
+  import('./views/HomeView/HomeView' /* webpackChunkName: "HomeView"*/),
+);
+const FilmDetailsView = lazy(() =>
+  import(
+    './views/FilmDetailsView/FilmDetailsView' /* webpackChunkName: "FilmDetailsView"*/
+  ),
+);
+const SearchMovies = lazy(() =>
+  import(
+    './components/SearchMovies/SearchMovies' /* webpackChunkName: "SearchMovies"*/
+  ),
+);
+
+export default function App() {
+  const [searchFilm, setSearchFilm] = useState('');
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Navigation />
+      <Suspense fallback={<Spinner />}>
+        <Switch>
+          <Route path="/" exact>
+            <HomePage />
+          </Route>
+          <Route path="/movies" exact>
+            <SearchMoviesForm onSubmit={setSearchFilm} />
+            <SearchMovies searchMovies={searchFilm} />
+          </Route>
+          <Route path="/movies/:movieId">
+            <FilmDetailsView />
+          </Route>
+          <Route>
+            <NotFoundView />
+          </Route>
+        </Switch>
+      </Suspense>
+    </>
   );
 }
-
-export default App;
